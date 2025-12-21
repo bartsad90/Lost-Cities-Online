@@ -57,7 +57,7 @@ renderPlayerHand(hands, actPl);
 actPl = switchActPl(actPl);
 renderPlayerHand(hands, actPl);
 renderDiscardPiles(discardPiles);
-
+renderDeckArea(deck)
 
 function createDeckTemplate(deck, totalCardsInFullDeck) {
   for (let i = 1; i <= totalCardsInFullDeck; i++) {
@@ -182,12 +182,12 @@ function renderDiscardPiles(discardPiles, draggedCard) {
     ></div>`
   })
   discardArea.innerHTML = innerHTML;
-  document.querySelectorAll(".discard-pile").
+  /* document.querySelectorAll(".discard-pile").
 
   //? delete to make DRY and to avoid conflicts
   forEach((discardPileELement) => {
     addDropEventListener(discardPileELement, discardPiles, draggedCard)
-  })
+  }) */
 }
 
 function addDragAndDropEventListeners(handData, discardPiles, draggedCard) {
@@ -196,7 +196,7 @@ function addDragAndDropEventListeners(handData, discardPiles, draggedCard) {
     document.getElementById(`${card.color}-${card.value}`)
     cardElement.addEventListener("dragstart", (ev) => {
       const cardElementData = cardElement.outerHTML;
-      ev.dataTransfer.setData("html", cardElementData);
+      ev.dataTransfer.setData/*figure out a way to set info in stringified JSON*/("html", cardElementData);
       console.log(cardElementData)
       draggedCard = card; //stores card in a variable outside of the scope to access it with a different event listener 
       //! sometimes returns undefined
@@ -213,27 +213,69 @@ function addDragAndDropEventListeners(handData, discardPiles, draggedCard) {
 
 function addDropEventListener(discardPileELement, discardPiles, draggedCard, handData) {
   discardPileELement.addEventListener("dragover", (ev) => {
-    console.log("dragover");
     ev.preventDefault();
   })
   discardPileELement.addEventListener("drop", (ev) => {
     const cardElementData = ev.dataTransfer.getData("html");
     discardPileELement.innerHTML = cardElementData;
-    console.log(draggedCard)
-    console.log(discardPiles);
     draggedCard = handData.find(card => (card.color === draggedCard.color 
     && card.value === draggedCard.value))
-    console.log(draggedCard)
 
     discardPiles.discardR.push(draggedCard);
-    console.log(discardPiles);
 
     const draggedCardIndex = handData.indexOf(draggedCard)
     handData.splice(draggedCardIndex, 1)
     console.log('card deleted from hand. draggedCard: ', draggedCard, 'draggedCardIndex: ', draggedCardIndex, 'handData: ', handData);
+    renderPlayerHand(hands, 1);
+    renderPlayerHand(hands, 2);
   })
 }
 
+function renderDeckArea(deck) {
+  const deckCardCount = deck.length;
+  renderDeckCardCount(deckCardCount);
+  deckElement = document.querySelector('.js-deck');
+  deckElement.classList.add('card');
+  deckElement.innerHTML = 'deck'
+  addDeckListener(deck, hands);
+}
+
+function addDeckListener(deck, hands, draggedCard) {
+  deckElement = document.querySelector('.js-deck');
+  deckElement.addEventListener('dragstart', (ev) => {
+    draggedCard = deck[0];
+    ev.dataTransfer.setData/*figure out a way to set info in stringified JSON*/('text', draggedCard.value + draggedCard.color);
+    const data = ev.dataTransfer.getData('text');
+    console.log(data)
+    addHandsListener(hands, deck, actPl);
+  })
+}
+
+function renderDeckCardCount(deckCardCount) {
+  console.log('rendering card counter')
+  cardCounterElement = document.querySelector('.js-deck-card-counter');
+  cardCounterElement.innerHTML = `Cards in deck: ${deckCardCount}`;
+}
+
+
+function addHandsListener(hands, cardSource, actPl, draggedCard) {
+  let playerHand;
+  actPl === 1 ? (playerHand = hands.hPlayer1) : (playerHand = hands.hPlayer2);
+  const playerHandArea = document.querySelector(`.js-p${actPl}-area`);
+  playerHandArea.addEventListener('dragover', (ev) => {
+    ev.preventDefault();
+    console.log('dragover')
+  })
+  playerHandArea.addEventListener('drop', (ev) => {
+    ev.preventDefault();
+    playerHand.push(draggedCard);
+    indexOfDraggedCard = cardSource.indexOf(draggedCard);
+    cardSource.splice(indexOfDraggedCard, 1);
+    renderDeckArea(deck);
+    renderDiscardPiles(discardPiles, draggedCard);
+    renderPlayerHand(hands, actPl);
+  })
+}
 
 //-------------------------------------
 

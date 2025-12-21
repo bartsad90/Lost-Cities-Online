@@ -9,7 +9,7 @@ body {
     font-size: 16px;
 }
 
-.p-area, .discard-area {
+.p-area, .deck-discard-box {
     display: flex;
     width: 80em;
     height: 20em;
@@ -27,12 +27,23 @@ body {
     font-size: 40px;
     font-weight: 900;
 }
+.deck-discard-box {
+    display: flex;
+}
 
+.discard-area {
+    display: flex;
+}
 .discard-pile {
     width: 10em;
     height: 12em; 
     border: 1px solid black;
     border-radius: 10px;
+}
+
+.deck-area {
+    flex: 1;
+    border-left: 1px solid black;
 }
 
 [data-color="discardW"], [data-color="white"] {
