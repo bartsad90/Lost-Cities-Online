@@ -1,0 +1,55 @@
+:root {
+    --dark-grey-ls: rgb(44, 44, 44);
+    --sand-yellow-ls: rgb(231, 203, 135);
+}
+
+body {
+    background-color: var(--dark-grey-ls);
+
+    font-size: 16px;
+}
+
+.p-area, .discard-area {
+    display: flex;
+    width: 80em;
+    height: 20em;
+    background-color: var(--sand-yellow-ls);
+    border: 1px solid black;
+}
+
+.card {
+    display: flex;
+    justify-content: center;
+    width: 100px;
+    height: 150px; 
+    border: 1px solid black;
+    border-radius: 10px;
+    font-size: 40px;
+    font-weight: 900;
+}
+
+.discard-pile {
+    width: 10em;
+    height: 12em; 
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+[data-color="discardW"], [data-color="white"] {
+    background-color: white;
+}
+[data-color="discardR"], [data-color="red"] {
+    background-color: red;
+}
+
+[data-color="discardG"], [data-color="green"] {
+    background-color: green;
+}
+
+[data-color="discardB"], [data-color="blue"] {
+    background-color: rgb(81, 81, 255);
+}
+
+[data-color="discardY"], [data-color="yellow"] {
+    background-color: yellow;
+}
