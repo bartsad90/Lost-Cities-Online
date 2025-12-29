@@ -64,3 +64,12 @@ body {
 [data-color="discardY"], [data-color="yellow"] {
     background-color: yellow;
 }
+
+.dragover {
+    box-shadow: 10px 10px 10px 10px greenyellow;
+    z-index: 1000;
+}
+
+.player-hand-box {
+    display: flex;
+}
