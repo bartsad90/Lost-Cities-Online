@@ -9,7 +9,7 @@ body {
     font-size: 16px;
 }
 
-.p-area, .deck-discard-box {
+.p-area, .deck-discard-box, .player-stack-box {
     display: flex;
     width: 80em;
     height: 20em;
@@ -34,7 +34,7 @@ body {
 .discard-area {
     display: flex;
 }
-.discard-pile {
+.discard-pile, .stack-pile {
     width: 10em;
     height: 12em; 
     border: 1px solid black;
@@ -70,6 +70,6 @@ body {
     z-index: 1000;
 }
 
-.player-hand-box {
+.player-hand-box, player-hand-box {
     display: flex;
 }

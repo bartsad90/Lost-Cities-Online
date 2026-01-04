@@ -31,6 +31,8 @@ let hands = {
   hPlayer2,
 };
 
+//[] use a constructor to create stacks
+//?add some methods to the class
 const discardPiles = {
   white: [],
   red: [],
@@ -38,22 +40,25 @@ const discardPiles = {
   green: [],
   blue: [],
 };
-
-const player1area = {
-  p1White: [],
-  p1Red: [],
-  p1Yellow: [],
-  p1Green: [],
-  p1Blue: [],
+const sPlayer1 = {
+  white: [],
+  red: [],
+  yellow: [],
+  green: [],
+  blue: [],
+};
+const sPlayer2 = {
+  white: [],
+  red: [],
+  yellow: [],
+  green: [],
+  blue: [],
 };
 
-const player2area = {
-  p2White: [],
-  p2Red: [],
-  p2Yellow: [],
-  p2Green: [],
-  p2Blue: [],
-};
+const stacks = {
+  sPlayer1,
+  sPlayer2
+}
 
 setMode(mode, colorsTemplate);
 const totalCardsInFullDeck = colorsTemplate.length * 12;
@@ -292,13 +297,20 @@ function dropHandler(event, htmlElement) {
   console.log("draggedCard: ", draggedCard);
   const source = findSource(draggedCard.source);
   console.log("source: ", source);
-  target === discardPiles
-  ? (target = discardPiles[draggedCard.color])
-  : target
-  //target === stacks 
-  // ? target 
-  // : target
+  console.log("target: ", target);
+  console.log(target === discardPiles);
+  console.log(`${draggedCard.color}`);
+  console.log(target[`${draggedCard.color}`]);
+  
+  //? Is there a way to state: 'if target is strictly equal to a subset of the sacks object'?
+  if (target === discardPiles 
+      || target === stacks.sPlayer1 
+      || target === stacks.sPlayer2) 
+   {target = target[`${draggedCard.color}`];}
+
+  console.log("target: ", target)
   const foundCard = findCardInArray(draggedCard, source);
+
   foundCard
   ? foundCard.moveToFrom(target, source)
   : console.log(`Card not found`);
@@ -306,6 +318,7 @@ function dropHandler(event, htmlElement) {
   renderDeckArea(deck);
   renderDiscardPiles(discardPiles, colorsTemplate);
   renderPlayerHand(hands, actPl);
+  renderPlayerStacks(stacks, colorsTemplate);
   htmlElement.classList.remove("dragover");
   actPl = switchActPl(actPl);
 }
@@ -344,18 +357,89 @@ function addDragoverListener(htmlElement) {
 
 function findTarget(htmlElement) {
   let target;
+  console.log("htmlElement: ", htmlElement);
+  console.log(htmlElement.classList.contains("js-discard-area"));
+
   if (htmlElement.classList.contains("js-player-hand-box-1")) {
     target = hands.hPlayer1;
   } else if (htmlElement.classList.contains("js-player-hand-box-2")) {
     target = hands.hPlayer2;
   } else if (htmlElement.classList.contains("js-discard-area")) {
     target = discardPiles;
-  } else if (htmlElement.classList.contains("js-stack")) {
-    target = stacks;
+  } else if (htmlElement.classList.contains("js-player-stack-box-1")) {
+    target = stacks.sPlayer1;
+  } else if (htmlElement.classList.contains("js-player-stack-box-2")) {
+    target = stacks.sPlayer2;
   }
+  console.log('target: ', target);
   return target;
 }
 
+renderPlayerStacks(stacks, colorsTemplate);
+
+function renderPlayerStacks(stacks, colorsTemplate) {
+  console.log("Rendering stacks");
+  console.log("stacks: ", stacks);
+  const stackElements = document.querySelectorAll(".js-player-stack-box");
+  console.log(stackElements);
+  
+  let playerStack = 'sPlayer1';
+  stackElements.forEach((stackElement) => {
+    // playerNumber is equal to index + 1 to avoid representing player 1 as player 0, since arrays are zero-indexed 
+    let playerNumber;
+    playerStack === 'sPlayer1' ? playerNumber = 1 : playerNumber = 2; 
+    let innerHTML = "";
+    colorsTemplate.forEach((color) => {
+      innerHTML += `<div
+      class="stack-pile
+      js-stack-pile"
+      data-color="${color}"
+      data-player="${playerNumber}"
+      id="stack-p${playerNumber}-${color}"
+      >
+      <div class="stack-p${playerNumber}-inner-pile-${color}">
+      </div>
+      </div>`;
+    });
+    stackElement.innerHTML = innerHTML;
+    addDragoverListener(stackElement);
+    addDropListener(stackElement);
+    playerStack = 'sPlayer2'
+  })
+  
+  //discardArea.removeEventListener("drop", (event) => {
+    //dropHandler(event, discardArea);
+    //  });
+    
+    playerStack = 'sPlayer1';
+    stackElements.forEach((stackElement) => {
+      let playerNumber;
+      playerStack === 'sPlayer1' ? playerNumber = 1 : playerNumber = 2; 
+      colorsTemplate.forEach((color) => {
+        innerHTML = "";
+      const innerPile = document.querySelector(`.stack-p${playerNumber}-inner-pile-${color}`);
+      const stack = stacks[`${playerStack}`][`${color}`];
+      stack.forEach((card) => {
+        innerHTML += `<div 
+        class="card js-card" 
+        data-source="stack"
+        data-color="${card.color}"
+        data-value="${card.value}"
+        data-player="${playerNumber}"
+        draggable="true"
+        id="stack-p${playerNumber}-inner-pile-${color}"
+        >
+        ${card.value}
+        </div>`;
+      });
+      innerPile.innerHTML = innerHTML;
+
+      //   cardElement = document.querySelector(`#discard-inner-${color}`);
+      //   cardElement ? addDragstartListener(cardElement) : color;
+    });
+    playerStack = 'sPlayer2'
+  })
+}
 //! how card is declared is dependent on drag-and-drop solutions
 
 //[] create stacks
@@ -365,10 +449,10 @@ function findTarget(htmlElement) {
 //[x] Find out if using id/data in html may be of use
 //[x]] using card methods may be better than html id/data
 //[x] use some card functions as methods for card/hand objects
-//[] create a single universal AddDropListener function for all elements:
+//[x] create a single universal AddDropListener function for all elements:
 //[x] - hands
 //[x] - discard piles
-//[] - stacks
+//[x] - stacks
 
 //[x] create a single universal AddDragStartListener function for all card elements in:
 //[x] - hands
